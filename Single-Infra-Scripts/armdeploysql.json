@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "customerAbbr": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30
+          },
+        "sqlServerName":{
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 24
+          },
+        "environmentName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 25
+          },
+        "sqlserverAdminLogin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sqlserverAdminLoginPassword": {
+            "type": "securestring"
+          }
+    },
+    "variables": {
+    
+    },
+    "resources": [
+        {
+            "name": "[parameters('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-05-01-preview",
+            "tags": {
+              "displayName": "parameters('sqlServerName')"
+            },
+            "properties": {
+              "administratorLogin": "[parameters('sqlserverAdminLogin')]",
+              "administratorLoginPassword": "[parameters('sqlserverAdminLoginPassword')]"
+            },
+            "resources": [
+              {
+                "name": "TamTam Amsterdam",
+                "type": "firewallRules",
+                "apiVersion": "2015-05-01-preview",
+                "dependsOn": [
+                  "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                ],
+                "properties": {
+                  "startIpAddress": "89.20.163.70",
+                  "endIpAddress": "89.20.163.70"
+                }
+              },
+              {
+                "name": "TamTam rotterdam",
+                "type": "firewallRules",
+                "apiVersion": "2015-05-01-preview",
+                "dependsOn": [
+                  "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                ],
+                "properties": {
+                  "startIpAddress": "89.20.163.66",
+                  "endIpAddress": "89.20.163.66"
+                }
+              },
+              {
+                "name": "TamTam Databarn",
+                "type": "firewallRules",
+                "apiVersion": "2015-05-01-preview",
+                "dependsOn": [
+                  "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                ],
+                "properties": {
+                  "startIpAddress": "217.148.162.0",
+                  "endIpAddress": "217.148.162.15"
+                }
+              }
+            ]
+          }],
+    "outputs": {
+    }
+  }
+  

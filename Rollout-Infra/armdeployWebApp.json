@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "customerAbbr": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30
+          },
+        "AppServiceName":{
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 24
+          },
+          "WebAppName":{
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 24
+          },
+          "StagingName":{
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100
+          },
+        "environmentName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 25
+          },
+          "SKU": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 4
+          }
+    },
+    "variables": {
+    
+    },
+    "resources": [
+      {
+        "apiVersion": "2015-08-01",
+        "type": "Microsoft.Web/serverfarms",
+        "kind": "app",
+        "name": "[parameters('AppServiceName')]",
+        "location": "[resourceGroup().location]",
+        "comments": "This app service plan is used for the web app and slots.",
+        "tags": {
+          "displayName": "[parameters('AppServiceName')]"
+        },
+        "properties": {},
+        "dependsOn": [],
+        "sku": {
+          "name": "[parameters('SKU')]"
+        }
+      },
+      {
+        "apiVersion": "2015-08-01",
+        "type": "Microsoft.Web/sites",
+        "kind": "app",
+        "name": "[parameters('WebAppName')]",
+        "location": "[resourceGroup().location]",
+        "comments": "This is the web app, also the default 'nameless' slot.",
+        "tags": {
+          "displayName": "WebApp"
+        },
+        "properties": {
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('AppServiceName'))]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('AppServiceName'))]"
+        ]
+      },
+      {
+        "apiVersion": "2016-08-01",
+        "type": "Microsoft.Web/sites/slots",
+        "kind": "app",
+        "name": "[concat(parameters('WebAppName'), '/', parameters('StagingName'))]",
+        "location": "[resourceGroup().location]",
+        "comments": "This specifies the web app slots.",
+        "tags": {
+          "displayName": "[parameters('StagingName')]"
+        },
+        "properties": {
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('AppServiceName'))]"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/Sites', parameters('WebAppName'))]"
+        ]
+      }
+    ],  
+    "outputs": {
+    }
+  }
+  

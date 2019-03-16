@@ -1,0 +1,44 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "profileName": {
+            "type": "string"
+        },
+        "endpointName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "object"
+        },
+        "profileProperties": {
+            "type": "object"
+        },
+        "endpointProperties": {
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-04-02",
+            "name": "[parameters('profileName')]",
+            "location": "[parameters('location')]",
+            "sku": "[parameters('sku')]",
+            "properties": "[parameters('profileProperties')]",
+            "type": "microsoft.cdn/profiles"
+        },
+        {
+            "apiVersion": "2018-04-02",
+            "dependsOn": [
+                "[concat('Microsoft.Cdn/profiles/', parameters('profileName'))]"
+            ],
+            "name": "[concat(parameters('profileName'),'/',parameters('endpointName'))]",
+            "location": "[parameters('location')]",
+            "properties": "[parameters('endpointProperties')]",
+            "type": "microsoft.cdn/profiles/endpoints"
+        }
+    ]
+}
